@@ -1,5 +1,13 @@
 import axios from "axios";
-
+export interface chatScriptI {
+  star: string;
+  model: string;
+  id: string;
+  chat_limit: string;
+  is_rag: string;
+  message: string;
+  temperature: string;
+}
 export const chatScript = async ({
   star,
   model,
@@ -8,7 +16,7 @@ export const chatScript = async ({
   is_rag,
   message,
   temperature,
-}: any) => {
+}: chatScriptI) => {
   try {
     const response = await axios.post(`https://chatx-api.hadiwijaya.co/chat`, {
       star,
@@ -25,7 +33,7 @@ export const chatScript = async ({
   }
 };
 
-export const resetChat = async ({ id, star }: any) => {
+export const resetChat = async ({ id, star }: { id: string; star: string }) => {
   try {
     const response = await axios.post(`https://chatx-api.hadiwijaya.co/reset`, {
       star,

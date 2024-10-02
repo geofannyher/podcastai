@@ -2,22 +2,19 @@
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 
 const AdminPage: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const loopRef = useRef<any>(null);
 
   const startPodcast = async () => {
     setIsPlaying(true);
-    loopRef.current = true;
     // Lakukan operasi loop untuk memulai podcast
     // Misalnya, menghubungkan ke WebSocket atau menjalankan logika podcast
   };
 
   const stopPodcast = () => {
     setIsPlaying(false);
-    loopRef.current = false;
     // Hentikan podcast
   };
 

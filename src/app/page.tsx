@@ -24,7 +24,7 @@ const HomePage: React.FC = () => {
     star?: string;
     message: string;
   }): Promise<void> => {
-    const audioResponse: any = await textToSpeech({
+    const audioResponse: { data: "string" } = await textToSpeech({
       message,
       voice_id,
     });

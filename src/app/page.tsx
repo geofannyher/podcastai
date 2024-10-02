@@ -1,101 +1,141 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
+import Circle from "./components/audio";
+import { textToSpeech } from "./services/chat.services";
 import Image from "next/image";
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+const HomePage: React.FC = () => {
+  const [isActive, setIsActive] = useState({
+    active: false,
+    id: 0,
+  });
+  const [btn, setBtn] = useState(false);
+  const { toast } = useToast();
+  const AiBattle = async ({
+    id,
+    voice_id,
+    message,
+  }: {
+    id: number;
+    voice_id: string;
+    star?: string;
+    message: string;
+  }): Promise<void> => {
+    const audioResponse: any = await textToSpeech({
+      message,
+      voice_id,
+    });
+    const resultAudioChat = audioResponse.data;
+    if (resultAudioChat) {
+      const audio = new Audio(resultAudioChat);
+      setIsActive(() => ({ id: id, active: true }));
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      // Menggunakan Promise untuk menunggu audio selesai
+      return new Promise((resolve) => {
+        audio.onended = () => {
+          setIsActive((prev) => ({ ...prev, active: false }));
+          resolve(); // Menyelesaikan Promise ketika audio selesai
+        };
+        audio.play().catch((e) => console.error("Error playing audio:", e));
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: "Ada masalah dengan API audio.",
+      });
+    }
+  };
+
+  const playDeb = async () => {
+    setBtn(true);
+    let maks = 1;
+    while (maks > 0) {
+      // ai 1
+      await AiBattle({
+        id: 1,
+        message:
+          "halo bisa diceritakan masalahnya kenapa ekonomi kelas menengah katanya akan hilang ?",
+        voice_id: "9p9SE48FlAiFkK5sCRly",
+      });
+
+      // ai 2
+      await AiBattle({
+        id: 2,
+        message:
+          "Kelas menengah memang mengalami penurunan jumlah dan proporsi, namun tidak akan hilang",
+        voice_id: "DbeLn5JcjpcjkQwbbwp2",
+      });
+
+      maks--;
+    }
+    setBtn(false);
+  };
+  return (
+    <div className="mx-auto flex relative items-center justify-center h-screen">
+      <div className="grid grid-cols-12 min-h-60">
+        <div className="col-span-12 md:col-span-5 xl:col-span-5 md:flex md:items-start md:justify-center">
+          <div className="flex items-center gap-5">
+            <div className="relative h-20 w-20 ">
+              <Image
+                alt="ai"
+                src="/ai.jpg"
+                layout="fill"
+                objectFit="cover"
+                className="rounded-full border p-2"
+              />
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-around" }}>
+              {Array.from({ length: 8 }).map((_, index) => (
+                <Circle
+                  key={index}
+                  isActive={isActive?.id === 1 && isActive?.active}
+                />
+              ))}
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+        <div className="col-span-12 md:col-span-2 xl:col-span-2 md:flex md:items-center md:justify-center">
+          <div className="xl:h-full xl:w-1 h-1 w-full rounded-xs bg-white"></div>
+        </div>
+        <div className="col-span-12 md:col-span-5 xl:col-span-5 md:flex md:items-end md:justify-center">
+          <div className="flex items-center gap-5">
+            <div style={{ display: "flex", justifyContent: "space-around" }}>
+              {Array.from({ length: 8 }).map((_, index) => (
+                <Circle
+                  key={index}
+                  isActive={isActive?.id === 2 && isActive?.active}
+                />
+              ))}
+            </div>
+            <div className="relative h-20 w-20 ">
+              <Image
+                alt="ai"
+                src="/ai.jpg"
+                layout="fill"
+                objectFit="cover"
+                className="rounded-full border p-2"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="absolute bottom-10 z-10 mt-10 justify-center w-full flex gap-10 items-center">
+        <Button
+          variant="outline"
+          disabled={btn}
+          className={`${
+            btn ? "cursor-not-allowed" : "cursor-pointer"
+          } rounded-sm font-bold hover:bg-gray-200 shadow-lg`}
+          onClick={playDeb}
         >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          {btn ? "Listening Podcast" : "Start Podcast"}
+        </Button>
+      </div>
     </div>
   );
-}
+};
+
+export default HomePage;

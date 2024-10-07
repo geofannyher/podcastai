@@ -1,6 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import React, { useState } from "react";
 
@@ -9,13 +16,10 @@ const AdminPage: React.FC = () => {
 
   const startPodcast = async () => {
     setIsPlaying(true);
-    // Lakukan operasi loop untuk memulai podcast
-    // Misalnya, menghubungkan ke WebSocket atau menjalankan logika podcast
   };
 
   const stopPodcast = () => {
     setIsPlaying(false);
-    // Hentikan podcast
   };
 
   return (
@@ -38,13 +42,26 @@ const AdminPage: React.FC = () => {
             Stop Podcast
           </Button>
         </div>
+
         <h1>Status Podcast</h1>
         <h1 className="text-white font-semibold text-center">
           {isPlaying ? "Podcast Mulai" : "Podcast Berhenti"}
         </h1>
+        <div className="mt-10 text-white">
+          <Select>
+            <SelectTrigger className="w-1/3">
+              <SelectValue placeholder="Select Persona" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="mamet">Mamet</SelectItem>
+              <SelectItem value="dewi">Dewi</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         <div className="mt-6 w-full">
           <Textarea
-            className="w-full p-4 border rounded"
+            className="w-full p-4 border text-white rounded"
             placeholder="Tambahkan fungsi tambahan di sini..."
             rows={5}
           />
